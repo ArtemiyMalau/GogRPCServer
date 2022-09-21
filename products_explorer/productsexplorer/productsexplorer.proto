@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package api;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./products_explorer/productsexplorer";
+
+service ProductsExplorer {
+  rpc Fetch(FetchRequest) returns (stream FetchResponse) {}
+  rpc List(ListRequest) returns (ListResponse) {}
+}
+
+message FetchRequest {
+  string url = 1;
+}
+
+message FetchResponse {
+  bytes fileChunk = 1;
+}
+
+message ListRequest {
+  message PagingParam {
+    uint32 page = 1;
+    uint32 count = 2;
+  }
+
+  message SortingParam {
+    enum SortType {
+      PRICE_ASC = 0;
+      PRICE_DESC = 1;
+      NAME_ASC = 2;
+      NAME_DESC = 3;
+      CHANGE_COUNT_ASC = 4;
+      CHANGE_COUNT_DESC = 5;
+      LAST_CHANGED_ASC = 6;
+      LAST_CHANGED_DESC = 7;
+    }
+
+    repeated SortType sort = 1;
+  }
+
+  PagingParam paging = 1;
+  SortingParam sorting = 2;
+}
+
+message Product {
+  string name = 1;
+  uint32 price = 2;
+  uint32 changeCount = 3;
+  google.protobuf.Timestamp lastChanged = 4;
+}
+
+message ListResponse {
+  repeated Product products = 1;
+}
