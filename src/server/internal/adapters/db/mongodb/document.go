@@ -2,9 +2,12 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"grpc_server/internal/application/apperror"
 	"grpc_server/internal/application/domain"
 )
 
@@ -12,7 +15,9 @@ func (a *Adapter) DocumentFindOne(ctx context.Context, url string) (document dom
 	result := a.documentC.FindOne(ctx, bson.M{"url": url})
 
 	if result.Err() != nil {
-		// TODO implement ErrNoDocuments error handling
+		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
+			return document, apperror.ErrNotFound
+		}
 		return document, fmt.Errorf("failed to find one document by url: %s due to error %v", url, result.Err())
 	}
 	if err := result.Decode(&document); err != nil {

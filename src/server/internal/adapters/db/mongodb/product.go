@@ -10,9 +10,9 @@ import (
 	"time"
 )
 
+// ProductUpsert upsert product using product's dto
+// Return product's _id ONLY in case when product was inserted not updated
 func (a *Adapter) ProductUpsert(ctx context.Context, dto domain.UpsertProductDTO) (string, error) {
-	var operationID interface{}
-
 	opts := options.Update().SetUpsert(true)
 	update := bson.D{
 		{"$set", bson.M{"price": dto.Price}},
@@ -28,34 +28,19 @@ func (a *Adapter) ProductUpsert(ctx context.Context, dto domain.UpsertProductDTO
 		return "", fmt.Errorf("failed to Upsert %s collection at UpdateOne method due to error %v", a.productC.Name(), err)
 	}
 
-	if updateResult.MatchedCount == 1 {
-		operationID = updateResult.UpsertedID
-	}
-
-	if updateResult.MatchedCount == 0 {
-		document := bson.D{
-			{"name", dto.Name},
-			{"price", dto.Price},
-			{"price_changed_count", 1},
-			{"date_last_price_change", time.Now()},
-			{"date_price_change", []domain.PriceHistory{domain.PriceHistory{
-				Price:           dto.Price,
-				DatePriceChange: time.Now(),
-			}}},
+	if updateResult.UpsertedCount == 1 {
+		oid, ok := updateResult.UpsertedID.(primitive.ObjectID)
+		if !ok {
+			return "", fmt.Errorf("failed to cast operationID to ObjectID")
 		}
-		insertResult, err := a.productC.InsertOne(ctx, document)
-		if err != nil {
-			return "", fmt.Errorf("failed to Upsert %s collection at InsertOne method due to error %v", a.productC.Name(), err)
-		}
-
-		operationID = insertResult.InsertedID
+		return oid.Hex(), nil
+	} else if updateResult.ModifiedCount == 1 {
+		return "", nil
+	} else {
+		// TODO Handle case when product was neither created nor updated
+		return "", fmt.Errorf("no objects was affected using dto %+v", dto)
 	}
 
-	oid, ok := operationID.(primitive.ObjectID)
-	if !ok {
-		return "", fmt.Errorf("failed to cast operationID to ObjectID")
-	}
-	return oid.Hex(), nil
 }
 
 func (a *Adapter) ProductFind(ctx context.Context, dto domain.SelectProductDTO) ([]domain.Product, error) {
