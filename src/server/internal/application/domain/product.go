@@ -17,3 +17,14 @@ type Product struct {
 	DateLastPriceChange time.Time      `json:"date_last_price_change" bson:"date_last_price_change"`
 	PriceHistory        []PriceHistory `json:"price_history" bson:"price_history"`
 }
+
+type UpsertProductDTO struct {
+	Name  string `json:"name" csv:"product_name"`
+	Price uint32 `json:"price" csv:"price"`
+}
+
+type SelectProductDTO struct {
+	Offset uint
+	Limit  uint
+	Sort   []int
+}
