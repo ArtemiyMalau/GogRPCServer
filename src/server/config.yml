@@ -1,1 +1,14 @@
 environment: development
+listen:
+  ip: 127.0.0.1
+  port: 8000
+mongodb:
+  host: 89.108.65.207
+  port: 27017
+  username:
+  password:
+  database: grpc
+  auth_db:
+  collections:
+    product: product
+    document: document
