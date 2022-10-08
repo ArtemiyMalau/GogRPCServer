@@ -4,7 +4,7 @@
 // - protoc             v3.21.6
 // source: products_explorer/productsexplorer/productsexplorer.proto
 
-package pb
+package proto
 
 import (
 	context "context"
