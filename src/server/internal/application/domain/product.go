@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"grpc_server/proto"
 	"time"
 )
 
@@ -28,3 +29,14 @@ type SelectProductDTO struct {
 	Limit  uint
 	Sort   []int
 }
+
+const (
+	SORT_PRICE_ASC         = int(proto.ListRequest_SortingParam_PRICE_ASC)
+	SORT_PRICE_DESC        = int(proto.ListRequest_SortingParam_PRICE_DESC)
+	SORT_NAME_ASC          = int(proto.ListRequest_SortingParam_NAME_ASC)
+	SORT_NAME_DESC         = int(proto.ListRequest_SortingParam_NAME_DESC)
+	SORT_CHANGE_COUNT_ASC  = int(proto.ListRequest_SortingParam_CHANGE_COUNT_ASC)
+	SORT_CHANGE_COUNT_DESC = int(proto.ListRequest_SortingParam_CHANGE_COUNT_DESC)
+	SORT_LAST_CHANGED_ASC  = int(proto.ListRequest_SortingParam_LAST_CHANGED_ASC)
+	SORT_LAST_CHANGED_DESC = int(proto.ListRequest_SortingParam_LAST_CHANGED_DESC)
+)
