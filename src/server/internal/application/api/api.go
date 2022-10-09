@@ -24,10 +24,20 @@ func NewApplication(db ports.DBPort) *Application {
 	return &Application{db: db}
 }
 
+// ProductSelectAll fetch products from db using pagination and sort fields
 func (a Application) ProductSelectAll(ctx context.Context, dto domain.SelectProductDTO) ([]domain.Product, error) {
 	return a.db.ProductFind(ctx, dto)
 }
 
+/*
+FetchCsv fetch data from foreign resource
+Trying to parse received data to csv format
+Find similar document in collection by url to determine whether csv already fetched and analyzed
+In case when data fetched for the first time iterate through all records in csv document and store them in database
+Return fetched data in bytes
+
+Possible solution is where we're storing fetched document content as well besides of url
+*/
 func (a Application) FetchCsv(ctx context.Context, url string) (csvBytes []byte, err error) {
 	log.Printf("Fetch csv with url: %s\n", url)
 	resp, err := http.Get(url)
