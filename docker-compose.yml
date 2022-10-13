@@ -18,7 +18,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongo_volume:/db
+      - mongo_volume:/data/db
     networks:
       - net
 
